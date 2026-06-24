@@ -101,3 +101,23 @@ def _bidiagonalise(A):
                 V_b = V_b @ H
 
     return U_b.T, A, V_b   #Returns U_b (m×m), B (m×n), V_b (n×n)
+
+
+def _householder_svd(A):
+    #Full SVD of A via bidiagonalisation + numpy's SVD on the bidiagonal
+    
+    m, n = A.shape
+    transpose = m < n
+    if transpose:
+        A = A.T
+        m, n = A.shape
+
+    U_b, B, V_b = _bidiagonalise(A)
+    U_s, s, Vt_s = np.linalg.svd(B, full_matrices=False)
+
+    U   = U_b @ U_s     
+    Vt  = Vt_s @ V_b.T
+
+    if transpose:
+        return Vt.T, s, U.T
+    return U, s, Vt  #Returns U, s, Vt  (same convention as np.linalg.svd(A, full_matrices=False)
