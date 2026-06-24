@@ -32,7 +32,7 @@ def lu_decomposition(A): #finding P,L,U such that P @ A = L @ U
     return P, L, U
 
 
-def forward_substitution(L, b): #  Forward substitution  Ly = b  (L lower)
+def forward_substitution(L, b): #  forward substitution  Ly = b  (L lower)
     n = len(b)
     y = np.zeros(n)
     for i in range(n):
@@ -40,7 +40,7 @@ def forward_substitution(L, b): #  Forward substitution  Ly = b  (L lower)
     return y
 
 
-def back_substitution(U, y): #  Back substitution  Ux = y  (U upper)
+def back_substitution(U, y): #  back substitution  Ux = y  (U upper)
     n = len(y)
     x = np.zeros(n)
     for i in range(n - 1, -1, -1):
@@ -69,7 +69,7 @@ def solve(A, b): #solve Ax = b using LU decomposition with partial pivoting
     return x
 
 def _bidiagonalise(A):
-    #Reduce A (m×n, m>=n) to upper bidiagonal form B = U_b @ A @ V_b
+    #reduce A (m×n, m>=n) to upper bidiagonal form B = U_b @ A @ V_b
     
     A = A.copy()
     m, n = A.shape
@@ -100,11 +100,11 @@ def _bidiagonalise(A):
                 A = A @ H
                 V_b = V_b @ H
 
-    return U_b.T, A, V_b   #Returns U_b (m×m), B (m×n), V_b (n×n)
+    return U_b.T, A, V_b   #returns U_b (m×m), B (m×n), V_b (n×n)
 
 
 def _householder_svd(A):
-    #Full SVD of A via bidiagonalisation + numpy's SVD on the bidiagonal
+    #full SVD of A via bidiagonalisation + numpy's SVD on the bidiagonal
     
     m, n = A.shape
     transpose = m < n
@@ -120,4 +120,24 @@ def _householder_svd(A):
 
     if transpose:
         return Vt.T, s, U.T
-    return U, s, Vt  #Returns U, s, Vt  (same convention as np.linalg.svd(A, full_matrices=False)
+    return U, s, Vt  #returns U, s, Vt  (same convention as np.linalg.svd(A, full_matrices=False)
+
+
+def pinv(A, rcond=None):
+    # compute the Moore-Penrose pseudo-inverse of A.
+
+    A = np.asarray(A, dtype=float)
+
+    U, s, Vt = _householder_svd(A)
+
+    if rcond is None:
+        rcond = max(A.shape) * np.finfo(float).eps
+
+    # threshold and invert singular values
+    threshold = rcond * s[0]   
+    s_inv = np.where(s <= threshold, 0.0, 1.0 / s)
+
+    # A⁺ =  A⁺ = V Σ⁺ Uᵀ = V diag(s_inv) Uᵀ
+    return (Vt.T * s_inv) @ U.T
+
+
