@@ -47,3 +47,23 @@ def back_substitution(U, y): #  Back substitution  Ux = y  (U upper)
         x[i] = (y[i] - U[i, i+1:] @ x[i+1:]) / U[i, i]
     return x
 
+def solve(A, b): #solve Ax = b using LU decomposition with partial pivoting
+    
+    A = np.asarray(A, dtype=float) # Ax = b
+    b = np.asarray(b, dtype=float)
+
+    if A.ndim != 2 or A.shape[0] != A.shape[1]:
+        raise np.linalg.LinAlgError("solve requires a square matrix")
+    if A.shape[0] != b.shape[0]:
+        raise ValueError("A and b sizes are incompatible")
+
+    P, L, U = lu_decomposition(A)   # PA = LU
+
+    # check for singular diagonal in U
+    if np.any(np.abs(np.diag(U)) < 1e-14):
+        raise np.linalg.LinAlgError("Matrix is singular to working precision")
+
+    Pb = P @ b  
+    y  = forward_substitution(L, Pb)  #Forward-sub:  Ly = Pb
+    x  = back_substitution(U, y)    #Back-sub: Ux = y
+    return x
