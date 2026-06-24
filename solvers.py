@@ -1,72 +1,24 @@
 import numpy as np
 
-def lu_decomposition(A): #finding P,L,U such that P @ A = L @ U
-    
-    A = np.array(A, dtype=float)
-    n = A.shape[0]
-    if A.shape[0] != A.shape[1]:
-        raise ValueError("lu_decomposition requires a square matrix")
-
-    U = A.copy()
-    L = np.eye(n)
-    P = np.eye(n)       
-
-    for k in range(n - 1):
-        # partial pivot, find row with largest absolute value in column k
-        pivot_row = k + np.argmax(np.abs(U[k:, k]))
-        if pivot_row != k:
-            U[[k, pivot_row]] = U[[pivot_row, k]]
-            P[[k, pivot_row]] = P[[pivot_row, k]]
-            # fix already-computed L columns to the left of k
-            if k > 0:
-                L[[k, pivot_row], :k] = L[[pivot_row, k], :k]
-
-        # elimination
-        for i in range(k + 1, n):
-            if U[k, k] == 0:
-                continue                    # singular column – skip
-            factor = U[i, k] / U[k, k]
-            L[i, k] = factor
-            U[i, k:] -= factor * U[k, k:]
-
-    return P, L, U
-
-
-def forward_substitution(L, b): #  forward substitution  Ly = b  (L lower)
-    n = len(b)
-    y = np.zeros(n)
-    for i in range(n):
-        y[i] = b[i] - L[i, :i] @ y[:i]
-    return y
-
-
-def back_substitution(U, y): #  back substitution  Ux = y  (U upper)
-    n = len(y)
-    x = np.zeros(n)
-    for i in range(n - 1, -1, -1):
-        x[i] = (y[i] - U[i, i+1:] @ x[i+1:]) / U[i, i]
-    return x
-
-def solve(A, b): #solve Ax = b using LU decomposition with partial pivoting
-    
-    A = np.asarray(A, dtype=float) # Ax = b
+def solve(A, b):
+    A = np.asarray(A, dtype=float)
     b = np.asarray(b, dtype=float)
+    n = len(b)
 
-    if A.ndim != 2 or A.shape[0] != A.shape[1]:
-        raise np.linalg.LinAlgError("solve requires a square matrix")
-    if A.shape[0] != b.shape[0]:
-        raise ValueError("A and b sizes are incompatible")
+    # elimination
+    for k in range(n-1):
+        for i in range(k+1, n):
+            factor = A[i,k] / A[k, k]
+            A[i, k:] -= factor * A[k, k:]
+            b[i] -= factor * b[k]
 
-    P, L, U = lu_decomposition(A)   # PA = LU
+    # substitution
+    x = np.zeros(n)
+    for i in range(n-1, -1, -1):
+        x[i] = (b[i] - A[i,i+1:] @ x[i+1:]) / A[i,i]
 
-    # check for singular diagonal in U
-    if np.any(np.abs(np.diag(U)) < 1e-14):
-        raise np.linalg.LinAlgError("Matrix is singular to working precision")
-
-    Pb = P @ b  
-    y  = forward_substitution(L, Pb)  #Forward-sub:  Ly = Pb
-    x  = back_substitution(U, y)    #Back-sub: Ux = y
     return x
+
 
 def _bidiagonalise(A):
     #reduce A (m×n, m>=n) to upper bidiagonal form B = U_b @ A @ V_b
@@ -155,7 +107,6 @@ def fit_weights(X, y):
         w = pinv(X) @ y
 
     return w
-
 
 
 #testing the functions and camparing them with numpy result:
