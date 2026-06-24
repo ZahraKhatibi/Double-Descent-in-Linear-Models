@@ -184,3 +184,10 @@ X = rng.standard_normal((50, 8))
 w_true = rng.standard_normal(8)
 y = X @ w_true + 0.01 * rng.standard_normal(50)
 check("fit_weights", fit_weights(X, y), w_true)
+
+############################################
+#   solve 5.551115123125783e-16            #
+#   pinv tall 2.7755575615628914e-16       #
+#   pinv wide 2.7755575615628914e-16       #
+#   fit_weights 0.003794992715173473       #
+############################################
