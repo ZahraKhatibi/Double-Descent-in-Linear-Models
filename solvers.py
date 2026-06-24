@@ -23,6 +23,8 @@ def lu_decomposition(A): #finding P,L,U such that P @ A = L @ U
 
         # elimination
         for i in range(k + 1, n):
+            if U[k, k] == 0:
+                continue                    # singular column – skip
             factor = U[i, k] / U[k, k]
             L[i, k] = factor
             U[i, k:] -= factor * U[k, k:]
