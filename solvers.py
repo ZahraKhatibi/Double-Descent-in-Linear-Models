@@ -67,3 +67,37 @@ def solve(A, b): #solve Ax = b using LU decomposition with partial pivoting
     y  = forward_substitution(L, Pb)  #Forward-sub:  Ly = Pb
     x  = back_substitution(U, y)    #Back-sub: Ux = y
     return x
+
+def _bidiagonalise(A):
+    #Reduce A (m×n, m>=n) to upper bidiagonal form B = U_b @ A @ V_b
+    
+    A = A.copy()
+    m, n = A.shape
+    U_b = np.eye(m)
+    V_b = np.eye(n)
+
+    for k in range(n):
+        # left: zero out below A[k, k]
+        x = A[k:, k].copy()
+        norm_x = np.linalg.norm(x)
+        if norm_x > 0:
+            x[0] += np.sign(x[0]) * norm_x
+            x /= np.linalg.norm(x)
+            H = np.eye(m)
+            H[k:, k:] -= 2.0 * np.outer(x, x)
+            A = H @ A
+            U_b = H @ U_b
+
+        # right: zero out to the right of A[k, k+1] 
+        if k < n - 2:
+            x = A[k, k+1:].copy()
+            norm_x = np.linalg.norm(x)
+            if norm_x > 0:
+                x[0] += np.sign(x[0]) * norm_x
+                x /= np.linalg.norm(x)
+                H = np.eye(n)
+                H[k+1:, k+1:] -= 2.0 * np.outer(x, x)
+                A = A @ H
+                V_b = V_b @ H
+
+    return U_b.T, A, V_b   #Returns U_b (m×m), B (m×n), V_b (n×n)
