@@ -158,3 +158,29 @@ def fit_weights(X, y):
 
 
 
+#testing the functions and camparing them with numpy result:
+rng = np.random.default_rng(42)
+
+def check(name, ours, ref):
+    err = np.max(np.abs(ours - ref))
+    print(name, err)
+
+# solve
+A = rng.standard_normal((5, 5))
+b = rng.standard_normal(5)
+check("solve", solve(A, b), np.linalg.solve(A, b))
+
+# pinv (tall)
+A = rng.standard_normal((10, 4))
+check("pinv tall", pinv(A), np.linalg.pinv(A))
+
+# pinv (wide)
+A = rng.standard_normal((4, 10))
+A[2] = A[0] + A[1]
+check("pinv wide", pinv(A), np.linalg.pinv(A))
+
+# fit_weights 
+X = rng.standard_normal((50, 8))
+w_true = rng.standard_normal(8)
+y = X @ w_true + 0.01 * rng.standard_normal(50)
+check("fit_weights", fit_weights(X, y), w_true)
