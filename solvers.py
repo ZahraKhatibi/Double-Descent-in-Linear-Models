@@ -127,7 +127,6 @@ def pinv(A, rcond=None):
     # compute the Moore-Penrose pseudo-inverse of A.
 
     A = np.asarray(A, dtype=float)
-
     U, s, Vt = _householder_svd(A)
 
     if rcond is None:
@@ -139,5 +138,23 @@ def pinv(A, rcond=None):
 
     # A⁺ =  A⁺ = V Σ⁺ Uᵀ = V diag(s_inv) Uᵀ
     return (Vt.T * s_inv) @ U.T
+
+
+def fit_weights(X, y):
+
+    d, n = X.shape[1], X.shape[0]
+
+    if d < n:
+        A = X.T @ X
+        b = X.T @ y
+        try:
+            w = solve(A, b)
+        except np.linalg.LinAlgError:
+            w = pinv(X) @ y
+    else:
+        w = pinv(X) @ y
+
+    return w
+
 
 
