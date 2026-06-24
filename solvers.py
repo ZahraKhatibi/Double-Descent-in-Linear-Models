@@ -30,3 +30,20 @@ def lu_decomposition(A): #finding P,L,U such that P @ A = L @ U
             U[i, k:] -= factor * U[k, k:]
 
     return P, L, U
+
+
+def forward_substitution(L, b): #  Forward substitution  Ly = b  (L lower)
+    n = len(b)
+    y = np.zeros(n)
+    for i in range(n):
+        y[i] = b[i] - L[i, :i] @ y[:i]
+    return y
+
+
+def back_substitution(U, y): #  Back substitution  Ux = y  (U upper)
+    n = len(y)
+    x = np.zeros(n)
+    for i in range(n - 1, -1, -1):
+        x[i] = (y[i] - U[i, i+1:] @ x[i+1:]) / U[i, i]
+    return x
+
