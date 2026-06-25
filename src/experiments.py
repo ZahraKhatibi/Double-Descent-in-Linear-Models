@@ -68,24 +68,24 @@ def run_noise_sweep(n, d_values, sigma_list, lambdas, n_trials, base_seed=77, ve
     noise_results = {}
     for sigma in sigma_list:
         if verbose:
-            print(f"\n[Noise] sigma={sigma}")
+            print(f"\n[Noise sweep] sigma={sigma}")
         noise_results[sigma] = run_experiment( n, d_values, sigma, lambdas=lambdas, n_trials=n_trials,
                                               base_seed=base_seed, verbose=verbose)
     return noise_results
 
 
-def gd_ols_solution(X, y, n_epochs=800, lr=None):
+def gd_ols_solution(X, y, n_epochs=800, lr=0.01):
     n, d = X.shape
     w = np.zeros(d)
-    lr = lr if lr is not None else 0.9 / (d + n)  #learning rate defaults to 0.9/(d+n)
     XtX = X.T @ X
     Xty = X.T @ y
     for _ in range(n_epochs):
-        w = w - lr * (XtX @ w - Xty)
+        grad = (2/n)* X.T @ (X @ w - y)
+        w = w - lr * grad
     return w
 
 
-def run_gd_experiment(n, d_values, sigma, n_trials=10, n_epochs=800, base_seed=55, verbose=True):
+def run_gd_experiment(n, d_values, sigma, n_trials=10, n_epochs=800, lr=0.01, base_seed=55, verbose=True):
 
     #compare closed-form OLS with gradient descent
 
@@ -94,7 +94,7 @@ def run_gd_experiment(n, d_values, sigma, n_trials=10, n_epochs=800, base_seed=5
     cf_buf = np.zeros((nd, n_trials))
 
     if verbose:
-        print(f"\n[Gradient descent] n_epochs={n_epochs}, n_trials={n_trials}")
+        print(f"\n[GD] n_epochs={n_epochs}, n_trials={n_trials}, lr={lr}")
 
     for i, d in enumerate(d_values):
         for t in range(n_trials):
@@ -102,10 +102,11 @@ def run_gd_experiment(n, d_values, sigma, n_trials=10, n_epochs=800, base_seed=5
             rng  = np.random.default_rng(seed)
             X_tr, y_tr, X_te, y_te, _ = generate_data(n, d, sigma, rng)
 
-            w_gd = gd_ols_solution(X_tr, y_tr, n_epochs=n_epochs)
+            w_gd = gd_ols_solution(X_tr, y_tr, n_epochs=n_epochs, lr=lr)
             gd_buf[i, t] = compute_mse(w_gd, X_te, y_te)
 
             w_cf = ols_solution(X_tr, y_tr)
             cf_buf[i, t] = compute_mse(w_cf, X_te, y_te)
 
-    return (gd_buf.mean(axis=1), gd_buf.std(axis=1), cf_buf.mean(axis=1), cf_buf.std(axis=1))
+    return (gd_buf.mean(axis=1), gd_buf.std(axis=1),
+            cf_buf.mean(axis=1), cf_buf.std(axis=1))
