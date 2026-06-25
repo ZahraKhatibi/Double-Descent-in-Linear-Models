@@ -51,3 +51,23 @@ def fig1_ols_train_test(d_values, n, res, sigma, outpath):
           ylabel='MSE (clipped at 20)',
           outpath=outpath,
           loc='upper right')
+
+def fig2_test_comparison(d_values, n, res, sigma, lambdas, outpath):
+    fig, ax = plt.subplots(figsize=(8, 5))
+    m = _clip(res['ols_test_mean'])
+    ax.plot(d_values, m, color='black', lw=2.2, label='OLS', zorder=6)
+    _band(ax, d_values, m, res['ols_test_std'], 'black', alpha=0.10)
+
+    for lam in lambdas:
+        color, label = RIDGE[lam]
+        m = _clip(res['ridge_test_mean'][lam])
+        ax.plot(d_values, m, color=color, lw=1.8, label=label)
+        _band(ax, d_values, m, res['ridge_test_std'][lam], color, alpha=0.10)
+
+    _vline(ax, n)
+    _save(fig, ax,
+          title=f'Test Error: OLS vs Ridge  ($n={n}$, $\\sigma={sigma}$)',
+          xlabel='Number of features $d$',
+          ylabel='Test MSE (clipped at 20)',
+          outpath=outpath,
+          ncol=2, loc='upper right')
