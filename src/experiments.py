@@ -74,16 +74,16 @@ def run_noise_sweep(n, d_values, sigma_list, lambdas, n_trials, base_seed=77, ve
     return noise_results
 
 
-def gd_ols_solution(X, y, n_epochs=800, lr=0.01):
+def gd_ols_solution(X, y, n_epochs=800, lr=0.1):
     n, d = X.shape
     w = np.zeros(d)
     for _ in range(n_epochs):
-        grad = (2/n)* X.T @ (X @ w - y)
+        grad = (1/n)* (X.T @ (X @ w - y))
         w = w - lr * grad
     return w
 
 
-def run_gd_experiment(n, d_values, sigma, n_trials=10, n_epochs=800, lr=0.01, base_seed=55, verbose=True):
+def run_gd_experiment(n, d_values, sigma, n_trials=10, n_epochs=800, lr=0.1, base_seed=55, verbose=True):
 
     #compare closed-form OLS with gradient descent
 
