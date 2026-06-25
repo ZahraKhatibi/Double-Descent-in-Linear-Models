@@ -99,3 +99,33 @@ def fig3_noise_individual(d_values, n, noise_results, outpath):
     fig.savefig(outpath, dpi=150, bbox_inches='tight')
     plt.show()
     plt.close(fig)
+
+
+def fig4_weight_norm(d_values, n, res, sigma, lambdas, outpath):
+    fig, (ax_ols, ax_ridge) = plt.subplots(1, 2, figsize=(13, 5))
+
+    # OLS
+    m = res['ols_norm_mean']
+    ax_ols.plot(d_values, m, color='steelblue', lw=2, label='OLS $\\|\\hat{w}\\|_2$')
+    _band(ax_ols, d_values, m, res['ols_norm_std'], 'steelblue')
+    _vline(ax_ols, n)
+    ax_ols.set(title='OLS Weight Norm vs $d$', xlabel='$d$', ylabel='$\\|\\hat{w}\\|_2$')
+    ax_ols.legend(fontsize=9)
+    ax_ols.grid(True, alpha=0.3, linestyle=':')
+    ax_ols.set_ylim(bottom=0)
+
+    # ridge
+    for lam in lambdas:
+        color, label = RIDGE[lam]
+        ax_ridge.plot(d_values, res['ridge_norm_mean'][lam], color=color, lw=1.8, label=label)
+    _vline(ax_ridge, n)
+    ax_ridge.set(title='Ridge Weight Norm vs $d$', xlabel='$d$', ylabel='$\\|\\hat{w}\\|_2$')
+    ax_ridge.legend(fontsize=9)
+    ax_ridge.grid(True, alpha=0.3, linestyle=':')
+    ax_ridge.set_ylim(bottom=0)
+
+    fig.suptitle(f'Weight Norm Analysis  ($n={n}$, $\\sigma={sigma}$)', fontsize=12)
+    fig.tight_layout()
+    fig.savefig(outpath, dpi=150, bbox_inches='tight')
+    plt.show()
+    plt.close(fig)
