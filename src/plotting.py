@@ -52,6 +52,7 @@ def fig1_ols_train_test(d_values, n, res, sigma, outpath):
           outpath=outpath,
           loc='upper right')
 
+
 def fig2_test_comparison(d_values, n, res, sigma, lambdas, outpath):
     fig, ax = plt.subplots(figsize=(8, 5))
     m = _clip(res['ols_test_mean'])
@@ -63,6 +64,7 @@ def fig2_test_comparison(d_values, n, res, sigma, lambdas, outpath):
         m = _clip(res['ridge_test_mean'][lam])
         ax.plot(d_values, m, color=color, lw=1.8, label=label)
         _band(ax, d_values, m, res['ridge_test_std'][lam], color, alpha=0.10)
+
     _vline(ax, n)
     _save(fig, ax,
           title=f'Test Error: OLS vs Ridge  ($n={n}$, $\\sigma={sigma}$)',
@@ -82,7 +84,8 @@ def fig3_noise(d_values, n, noise_results, outpath):
     _save(fig, ax, title=f'Effect of Noise on Double Descent  ($n={n}$)',
           xlabel='Number of features $d$', ylabel='OLS Test MSE (clipped at 20)',
           outpath=outpath, loc='upper right')
-    
+
+
 def fig3_noise_individual(d_values, n, noise_results, outpath):
     fig, axes = plt.subplots(1, 3, figsize=(15, 4.5))
     for ax, (sigma, res) in zip(axes, noise_results.items()):
@@ -130,6 +133,7 @@ def fig4_weight_norm(d_values, n, res, sigma, lambdas, outpath):
     plt.show()
     plt.close(fig)
 
+
 def fig5_gd(d_values, n, gd_mean, gd_std, cf_mean, cf_std, sigma, outpath):
     fig, ax = plt.subplots(figsize=(8, 5))
     for mean, std, color, ls, label in [(cf_mean, cf_std, 'blue', '-',  'OLS (closed-form)'),
@@ -140,3 +144,20 @@ def fig5_gd(d_values, n, gd_mean, gd_std, cf_mean, cf_std, sigma, outpath):
     _vline(ax, n)
     _save(fig, ax, title=f'Closed-form OLS vs Gradient Descent  ($n={n}$, $\\sigma={sigma}$)',
           xlabel='Number of features $d$', ylabel='Test MSE (clipped at 20)', outpath=outpath)
+    
+    
+def fig5_gd_comparison(d_values, n, results, cf_mean, cf_std, sigma, lg , outpath):
+    fig, ax = plt.subplots(figsize=(8, 5))
+
+    for val, (gd_mean, gd_std) in results.items():
+        m = _clip(gd_mean)
+        ax.plot(d_values, m, lw=2, label=f'GD ({lg}={val})')
+        _band(ax,d_values, m, gd_std,color='gray', alpha=0.08)
+
+    ax.plot(d_values, _clip(cf_mean), color='black', lw=3, label='OLS (closed-form)')
+    _vline(ax, n)
+    ax.set_ylim(top=2.3)
+    _save(fig, ax, title=f'Gradient Descent for Different Learning Rates ($n={n}$, $\\sigma={sigma}$)',
+        xlabel='Number of features $d$', ylabel='Test MSE', outpath=outpath)
+    
+    
