@@ -63,7 +63,6 @@ def fig2_test_comparison(d_values, n, res, sigma, lambdas, outpath):
         m = _clip(res['ridge_test_mean'][lam])
         ax.plot(d_values, m, color=color, lw=1.8, label=label)
         _band(ax, d_values, m, res['ridge_test_std'][lam], color, alpha=0.10)
-
     _vline(ax, n)
     _save(fig, ax,
           title=f'Test Error: OLS vs Ridge  ($n={n}$, $\\sigma={sigma}$)',
@@ -71,3 +70,15 @@ def fig2_test_comparison(d_values, n, res, sigma, lambdas, outpath):
           ylabel='Test MSE (clipped at 20)',
           outpath=outpath,
           ncol=2, loc='upper right')
+    
+def fig3_noise(d_values, n, noise_results, outpath):
+    fig, ax = plt.subplots(figsize=(8, 5))
+    for sigma, res in noise_results.items():
+        color = NOISE_COLORS.get(sigma, 'gray')
+        m = _clip(res['ols_test_mean'])
+        ax.plot(d_values, m, color=color, lw=2, label=f'$\\sigma={sigma}$')
+        _band(ax, d_values, m, res['ols_test_std'], color)
+    _vline(ax, n)
+    _save(fig, ax, title=f'Effect of Noise on Double Descent  ($n={n}$)',
+          xlabel='Number of features $d$', ylabel='OLS Test MSE (clipped at 20)',
+          outpath=outpath, loc='upper right')
