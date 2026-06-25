@@ -77,8 +77,6 @@ def run_noise_sweep(n, d_values, sigma_list, lambdas, n_trials, base_seed=77, ve
 def gd_ols_solution(X, y, n_epochs=800, lr=0.01):
     n, d = X.shape
     w = np.zeros(d)
-    XtX = X.T @ X
-    Xty = X.T @ y
     for _ in range(n_epochs):
         grad = (2/n)* X.T @ (X @ w - y)
         w = w - lr * grad
