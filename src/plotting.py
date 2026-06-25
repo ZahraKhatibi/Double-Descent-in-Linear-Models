@@ -129,3 +129,14 @@ def fig4_weight_norm(d_values, n, res, sigma, lambdas, outpath):
     fig.savefig(outpath, dpi=150, bbox_inches='tight')
     plt.show()
     plt.close(fig)
+
+def fig5_gd(d_values, n, gd_mean, gd_std, cf_mean, cf_std, sigma, outpath):
+    fig, ax = plt.subplots(figsize=(8, 5))
+    for mean, std, color, ls, label in [(cf_mean, cf_std, 'blue', '-',  'OLS (closed-form)'),
+                                        (gd_mean, gd_std, 'red',  '--', 'Gradient Descent (800 iters)'),]:
+        m = _clip(mean)
+        ax.plot(d_values, m, color=color, ls=ls, lw=2, label=label)
+        _band(ax, d_values, m, std, color, alpha=0.12)
+    _vline(ax, n)
+    _save(fig, ax, title=f'Closed-form OLS vs Gradient Descent  ($n={n}$, $\\sigma={sigma}$)',
+          xlabel='Number of features $d$', ylabel='Test MSE (clipped at 20)', outpath=outpath)
