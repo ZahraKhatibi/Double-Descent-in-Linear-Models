@@ -1,6 +1,6 @@
 # Double Descent in Linear Models
 
-An empirical and from-scratch study of the **double descent** phenomenon in linear regression, where test error follows a two-descent curve rather than the classical U-shape.
+An empirical and from-scratch study of the **double descent** phenomenon in linear models, where test error follows a two-descent curve rather than the classical U-shape.
 
 ---
 
@@ -8,7 +8,7 @@ An empirical and from-scratch study of the **double descent** phenomenon in line
 
 Classical statistical says more parameters lead to overfitting. Double descent breaks that rule: as the number of features $d$ grows past the number of training samples $n$, the test error spikes at $d = n$ then descends again. This project investigates why that happens and how regularisation and optimisation method affect it.
 
-All solvers are implemented from scratch in pure NumPy — including Gaussian elimination, Householder bidiagonalisation, a full SVD, and the Moore–Penrose pseudoinverse — with no dependence on `scipy` or sklearn.
+All solvers are implemented from scratch in pure NumPy, including Gaussian elimination, Householder bidiagonalisation, a full SVD, and the Moore–Penrose pseudoinverse, with no dependence on `scipy` or sklearn.
 
 ---
 
