@@ -107,7 +107,7 @@ Run all cells in order. Figures are saved to the `figures/` directory automatica
 
 ---
 
-## References
+## Reference
 
 - Belkin, M., Hsu, D., Ma, S., & Mandal, S. (2019). [Reconciling modern machine-learning practice and the classical bias–variance trade-off.](https://www.pnas.org/doi/10.1073/pnas.1903070116) *PNAS*.
-- Hastie, T., Montanari, A., Rosset, S., & Tibshirani, R. J. (2022). [Surprises in High-Dimensional Ridgeless Least Squares Interpolation.](https://arxiv.org/abs/1903.08560) *Annals of Statistics*.
+
