@@ -85,25 +85,6 @@ def fig3_noise(d_values, n, noise_results, outpath):
           xlabel='Number of features $d$', ylabel='OLS Test MSE (clipped at 20)',
           outpath=outpath, loc='upper right')
 
-
-def fig3_noise_individual(d_values, n, noise_results, outpath):
-    fig, axes = plt.subplots(1, 3, figsize=(15, 4.5))
-    for ax, (sigma, res) in zip(axes, noise_results.items()):
-        color = NOISE_COLORS.get(sigma, 'gray')
-        m = res['ols_test_mean']
-        ax.plot(d_values, m, color=color, lw=2)
-        _band(ax, d_values, m, res['ols_test_std'], color)
-        _vline(ax, n)
-        ax.set(title=f'σ = {sigma}', xlabel='$d$', ylim=(0, np.max(m) * 1.05))
-        ax.grid(True, alpha=0.3, linestyle=':')
-    axes[0].set_ylabel('Test MSE')
-    fig.suptitle(f'OLS Test Error for Different Noise Levels  ($n={n}$)', fontsize=12)
-    fig.tight_layout()
-    fig.savefig(outpath, dpi=150, bbox_inches='tight')
-    plt.show()
-    plt.close(fig)
-
-
 def fig4_weight_norm(d_values, n, res, sigma, lambdas, outpath):
     fig, (ax_ols, ax_ridge) = plt.subplots(1, 2, figsize=(13, 5))
 
